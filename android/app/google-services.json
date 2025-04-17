@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1074340533408",
+    "firebase_url": "https://qalam-4375d-default-rtdb.firebaseio.com",
+    "project_id": "qalam-4375d",
+    "storage_bucket": "qalam-4375d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1074340533408:android:5e65b7ef4cdb1c171c65c5",
+        "android_client_info": {
+          "package_name": "com.example.hatter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCi2v8vHX00aWudsIpKPDr9amSjqIXAB7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
