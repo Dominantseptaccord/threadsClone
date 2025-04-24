@@ -23,8 +23,6 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
         else if(index==2){
           Navigator.pushReplacementNamed(context, '/profile');
         }
-
-
       },
       items: const [
         BottomNavigationBarItem(

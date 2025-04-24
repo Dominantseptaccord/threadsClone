@@ -89,8 +89,12 @@ class _PostDetailState extends State<PostDetail> {
         children: [
           const SizedBox(height: 50),
           Card(
-            elevation: 10.0,
-            color: Colors.blueAccent,
+            elevation: 5,
+            margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            color: Colors.black12,
             child: Padding(
               padding: const EdgeInsets.all(15.0),
               child: Row(

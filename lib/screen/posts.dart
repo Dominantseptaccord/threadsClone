@@ -6,6 +6,7 @@ import 'package:hatter/database/post_service.dart';
 import 'package:hatter/components/navbotbar.dart';
 import 'package:hatter/screen/post_details.dart';
 import 'package:hatter/components/post_card.dart';
+
 class Post extends StatefulWidget{
   @override
   State<Post> createState() => _PostState();
@@ -45,30 +46,60 @@ class _PostState extends State<Post> {
       bottomNavigationBar: NavigationBottomBar(),
       appBar: AppBarWall(context),
       body: Padding(
-        padding: EdgeInsets.all(15.0),
+        padding: EdgeInsets.all(25.0),
         child: Column(
             children: [
               const SizedBox(height: 35.0,),
-              TextField(
-                controller: controllerPostController,
-                decoration: InputDecoration(
-                    hintText: 'Write something...',
-                    border: OutlineInputBorder(),
-                    icon: Icon(Icons.person)
-                ),
+              Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/createPost');
+                      },
+                      child: AbsorbPointer(
+                        child: TextField(
+                          controller: controllerPostController,
+                          decoration: InputDecoration(
+                              hintText: 'Write something...',
+                              border: OutlineInputBorder(),
+                              icon: Icon(Icons.person)
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8,),
+                    Row(
+                      children: [
+                        IconButton(
+                            onPressed: null,
+                            icon: Icon(Icons.photo)
+                        ),
+                        IconButton(
+                            onPressed: null,
+                            icon: Icon(Icons.mic_rounded)
+                        ),
+                        IconButton(
+                            onPressed: () {
+
+                            },
+                            icon: Icon(Icons.location_on)
+                        ),
+                      ],
+                    )
+                  ]
               ),
               Expanded(
-                  child: FutureBuilder(
-                  future: fetchPosts(),
-                  builder: (context,snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator(),);
-                    }
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('Post do not have'),);
-                    }
-                    final posts = snapshot.data!;
-                    return ListView.builder(
+                child: FutureBuilder(
+                    future: fetchPosts(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator(),);
+                      }
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(child: Text('Post do not have'),);
+                      }
+                      final posts = snapshot.data!;
+                      return ListView.builder(
                         itemCount: posts.length,
                         itemBuilder: (context, index) {
                           final post = posts[index];
@@ -77,11 +108,13 @@ class _PostState extends State<Post> {
                           final timestamp = post?['time'] as Timestamp?;
                           final time = timestamp?.toDate();
 
-                          return PostCard(content: content, email: email, time: time.toString());
+                          return PostCard(content: content,
+                              email: email,
+                              time: time.toString());
                         },
                       );
-                  }
-                  ),
+                    }
+                ),
               ),
               GestureDetector(
                 onTap: () async {
@@ -106,6 +139,7 @@ class _PostState extends State<Post> {
               ),
             ]
         ),
-      ),);
+      ),
+    );
   }
 }

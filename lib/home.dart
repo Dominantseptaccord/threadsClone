@@ -14,6 +14,24 @@ class HomePage extends StatefulWidget{
 }
 
 class _HomePageState extends State<HomePage> {
+  final List<Map<String, String>> newsList = [
+    {
+      'title': '🔥 Latest Threads Clone Updates',
+      'description': 'A new version of Threads Clone has been released with improved performance.'
+    },
+    {
+      'title': '📱 Most Popular Apps of 2025',
+      'description': 'Check out the top downloaded apps on Android and iOS.'
+    },
+    {
+      'title': '🧠 AI in Daily Life',
+      'description': 'How artificial intelligence helps us in everyday tasks.'
+    },
+    {
+      'title': '🌐 Web & Mobile Integration',
+      'description': 'Best practices for cross-platform development.'
+    },
+  ];
   final screens = [
     HomePage(),
     RegisterAuthentication(),
@@ -31,9 +49,35 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWall(context),
-      body: Center(
-        child: Text('Tew'),
-      ),
+        body: ListView.builder(
+          padding: EdgeInsets.all(16),
+          itemCount: newsList.length,
+          itemBuilder: (context, index) {
+            final news = newsList[index];
+            return Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              margin: EdgeInsets.only(bottom: 16),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      news['title']!,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      news['description']!,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       bottomNavigationBar: NavigationBottomBar()
     );
   }
