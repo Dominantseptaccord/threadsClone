@@ -60,6 +60,31 @@ class _RegisterAuthenticationState extends State<RegisterAuthentication> {
                   },
                   child: Text('Have an Account?'),
                 ),
+                const SizedBox(height: 10.0,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: ElevatedButton.icon(
+                    icon: Image.asset('assets/icons/google.png', width: 30),
+                    label: Text('Google'),
+                    onPressed: (){
+                      db.registerUserAsGoogle(context: context);
+                    },
+                  ),
+                ),
+                ElevatedButton.icon(
+                  icon: Image.asset('assets/icons/facebook.png', width: 30), // Добавь иконку
+                  label: Text('Facebook'),
+                  onPressed: () {
+                    db.registerUserAsFacebook(context: context);
+                  },
+                ),
+          ]
+                ),
+
                 const SizedBox(height: 25.0,),
                 ButtonAuthentication(
                     buttonText: 'Register',

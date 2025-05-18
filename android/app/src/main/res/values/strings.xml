@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">hatter</string>
+    <string name="facebook_app_id">1076709417612355</string>
+    <string name="facebook_client_token">fd4d3ae9a5e0d8821fab293727f7d8c2</string>
+</resources>

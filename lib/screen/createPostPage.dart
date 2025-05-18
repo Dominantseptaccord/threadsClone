@@ -6,6 +6,9 @@ import 'package:hatter/database/post_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CreatePostPage extends StatefulWidget {
   @override
@@ -13,12 +16,15 @@ class CreatePostPage extends StatefulWidget {
 }
 
 class _CreatePostPageState extends State<CreatePostPage> {
-
+  bool _isPushed = false;
   final controllerPostController = TextEditingController();
   bool showMap = false;
   final post = PostService();
   late String lat;
   late String long;
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+
 
   late GoogleMapController _mapController;
   Set<Marker> markers = {
@@ -65,6 +71,30 @@ class _CreatePostPageState extends State<CreatePostPage> {
   void _getCameraPosition(CameraPosition campos){
     print("cameraPosition: " + campos.target.toString());
   }
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<String?> _uploadImage(File image) async {
+    try {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('post_images')
+          .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final uploadTask = await storageRef.putFile(image);
+      final downloadUrl = await storageRef.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Upload error: $e');
+      return null;
+    }
+  }
+
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,9 +115,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 Row(
                   children: [
                     IconButton(
-                        onPressed: () {
-
-                        },
+                        onPressed: _pickImage,
                         icon: Icon(Icons.photo)
                     ),
                     IconButton(
@@ -119,6 +147,21 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     ),
                   ],
                 ),
+                if (_selectedImage != null)
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 10),
+                      height: 150,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        image: DecorationImage(
+                          image: FileImage(_selectedImage!),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
                 if(showMap)
                   Expanded(
                     child: Stack(
@@ -228,27 +271,64 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 Padding(
                   padding: EdgeInsets.all(9.0),
                   child: GestureDetector(
-                    onTap: () async {
-                      post.addPost(controllerPostController.text);
+                    onTapDown: (_) => setState(() => _isPushed = true),
+                    onTapUp: (_) async {
+                      setState(() => _isPushed = false);
+                      await Future.delayed(Duration(milliseconds: 200));
+
+                      String? imageUrl;
+                      if (_selectedImage != null) {
+                        imageUrl = await _uploadImage(_selectedImage!);
+                      }
+
+                      post.addPost(
+                        controllerPostController.text,
+                        imageUrl: imageUrl,
+                      );
+
                       controllerPostController.clear();
+                      setState(() {
+                        _selectedImage = null;
+                      });
                     },
-                    child: Container(
-                      padding: EdgeInsets.all(25.0),
+                    onTapCancel: () => setState(() => _isPushed = false),
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      padding: EdgeInsets.all(_isPushed ? 20.0 : 25.0),
                       margin: EdgeInsets.symmetric(horizontal: 20.0),
-                      decoration
-                          : BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(15.0),
+                      decoration: BoxDecoration(
+                        color: _isPushed ? Colors.grey[800] : Colors.white,
+                        borderRadius: BorderRadius.circular(_isPushed ? 30.0 : 15.0),
+                        boxShadow: _isPushed
+                            ? [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 12,
+                            spreadRadius: 2,
+                            offset: Offset(0, 6),
+                          )
+                        ]
+                            : [],
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
                       ),
                       child: Center(
                         child: Text(
                           'Push',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            color: _isPushed ? Colors.white : Colors.black87,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                )
+                ),
               ]),
         )
     );
